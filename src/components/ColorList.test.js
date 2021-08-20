@@ -1,33 +1,45 @@
 import React from 'react';
-import MutationObserver from 'mutationobserver-shim';
-
 import { render, screen } from "@testing-library/react";
 import ColorList from './ColorList';
 
-const testData= {
-    data: [ 
-      {color: "aqua", code: {hex: "#f0f8ff"}, id: 3}
-    ]
-  }
+const testColors = [{
+	color: "lilac2",
+	code: {
+		hex: "#9a99da",
+	},
+	id: 0,
+}, {
+	color: "lilac1",
+	code: {
+		hex: "#9a99d0",
+	},
+	id: 1,
+}, {
+	color: "lilac",
+	code: {
+		hex: "#9a99dd",
+	},
+	id: 2,
+}]
 
 test("Renders an empty list of colors without errors", () => {
-    render(<ColorList colors={[]} />)
+	render(<ColorList colors={[]} />);
 });
 
 test("Renders a list of colors without errors", () => {
-    render(<ColorList colors={testData.data} />)
-
-    expect(screen.getByText(/aqua/i)).toBeInTheDocument();
+	render(<ColorList colors={testColors} />)
 });
 
 test("Renders the EditForm when editing = true and does not render EditForm when editing = false", () => {
-    const { rerender } = render(<ColorList colors={testData.data} editing={true} />)
+	const getEditForm = () => screen.queryByTestId("editMenu");
 
-    const button = screen.getByTestId(/cancel_button/i);
+	const { rerender } = render(<ColorList colors={testColors} />);
 
-    expect(screen.getByTestId(/edit_menu/i)).toBeInTheDocument();
+	let editForm = getEditForm();
+	expect(editForm).toBeNull();
 
-    rerender(<ColorList colors={testData.data} editing={false}/>)
+	rerender(<ColorList colors={testColors} editing={true} />);
 
-    expect(screen.queryByTestId(/edit_menu/i)).not.toBeInTheDocument(); 
+	editForm = getEditForm();
+	expect(editForm).toBeVisible();
 });

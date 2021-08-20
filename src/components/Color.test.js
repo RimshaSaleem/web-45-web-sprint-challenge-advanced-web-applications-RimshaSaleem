@@ -1,52 +1,69 @@
 import React from 'react';
-import MutationObserver from 'mutationobserver-shim';
-
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import Color from './Color';
 
-test("Renders without errors with blank color passed into component", () => {
-    render(<Color color={{color: "", code: {hex: ""}, id: 0}} />)
-});
-  
-test("Renders the color passed into component", () => {
-    render(<Color color={{color: "aqua", code: {hex: "#f0f8ff"}, id: 3}} />)
+const testColor = {
+	color: "lilac",
+	code: {
+		hex: "#9a99dd",
+	},
+	id: 5,
+};
 
-    expect(screen.getByText(/aqua/i)).toBeInTheDocument();
+const blankColor = {
+	color: "",
+	code: {
+		hex: ""
+	},
+	id: null
+}
+
+test("Renders without errors with blank color passed into component", () => {
+	render(<Color color={blankColor} />);
+});
+
+test("Renders the color passed into component", () => {
+	render(<Color color={testColor} />);
+
+	const name = screen.getByText(testColor.color);
+
+	expect(name).toBeVisible();
 });
 
 test("Executes handleDelete and toggleEdit property when the 'x' icon is clicked", () => {
-    const mockDelete =jest.fn(() => {return 'delete'})
-    const mockToggle =jest.fn(()=>{ return 'toggle'})
+	const deleteColor = jest.fn();
+	const toggleEdit = jest.fn();
 
-    const { getByTestId } = render(<Color color={{color: "aqua", code: {hex: "#f0f8ff"}, id: 3}} 
-                  toggleEdit={mockToggle} deleteColor={mockDelete}/>)
-    
-    const button = getByTestId(/delete/i); 
- 
-    fireEvent.click(button) 
+	render(<Color color={testColor} deleteColor={deleteColor} toggleEdit={toggleEdit} />);
 
-    expect(mockDelete).toHaveBeenCalled();
-    expect(mockToggle).toHaveBeenCalled();
+	expect(deleteColor).not.toHaveBeenCalled();
+	expect(toggleEdit).not.toHaveBeenCalled();
 
+	const xButton = screen.getByTestId("delete");
+	userEvent.click(xButton);
 
- 
+	expect(toggleEdit).toHaveBeenCalled();
+	expect(toggleEdit.mock.calls[0][0]).toBe(false);
+	expect(deleteColor).toHaveBeenCalled();
+	expect(deleteColor.mock.calls[0][0]).toBe(testColor);
 
 });
 
 test("Executes setEditColor and toggleEdit property when color div is clicked", () => {
-    const mockEdit = jest.fn(()=> {return 'edit'})
-    const mockToggle =jest.fn(()=>{ return 'toggle'})
+	const setEditColor = jest.fn();
+	const toggleEdit = jest.fn();
 
-    const { getByTestId } = render(<Color color={{color: "aqua", code: {hex: "#f0f8ff"}, id: 3}}
-                          toggleEdit={mockToggle}  setEditColor={mockEdit}/>)
+	render(<Color color={testColor} setEditColor={setEditColor} toggleEdit={toggleEdit} />);
 
+	expect(setEditColor).not.toHaveBeenCalled();
+	expect(toggleEdit).not.toHaveBeenCalled();
 
-    const button = getByTestId(/color/i);
+	const colorName = screen.getByText(testColor.color);
+	userEvent.click(colorName);
 
-    fireEvent.click(button) 
-
-    expect(mockEdit).toHaveBeenCalled();
-    expect(mockToggle).toHaveBeenCalled();
-    
+	expect(toggleEdit).toHaveBeenCalled();
+	expect(toggleEdit.mock.calls[0][0]).toBe(true);
+	expect(setEditColor).toHaveBeenCalled();
+	expect(setEditColor.mock.calls[0][0]).toBe(testColor);
 });

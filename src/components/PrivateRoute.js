@@ -1,16 +1,18 @@
 
-import React from "react";
-import { Route, Redirect } from "react-router-dom";
 
-const PrivateRoute = (props) => {
-  if (localStorage.getItem("token")) {
-    return(
-        <Route {...props} />
-    )
-  }
-  return (
-    <Redirect to="login" />
-  )
+import React from 'react';
+import { Route, Redirect } from 'react-router-dom';
+
+import { hasToken } from '../helpers/axiosWithAuth';
+
+const PrivateRoute = ({ component: Component, ...rest }) => {
+	return <Route {...rest} render={(props) => {
+		if (hasToken()) {
+			return (<Component {...props} />);
+		} else {
+			return <Redirect to="/login" />
+		}
+	}} />
 }
 
 export default PrivateRoute;

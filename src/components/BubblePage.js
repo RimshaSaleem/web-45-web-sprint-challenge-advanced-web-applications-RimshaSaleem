@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from "react";
+import axiosWithAuth from "../helpers/axiosWithAuth";
 
 import Bubbles from "./Bubbles";
 import ColorList from "./ColorList";
-
-// import { editColorService, deleteColorService } from '../services/colorServices';
 import fetchColorService from '../services/fetchColorService';
-import { axiosWithAuth } from "../helpers/axiosWithAuth";
 
 const BubblePage = () => {
   const [colors, setColors] = useState([]);
@@ -16,37 +14,49 @@ const BubblePage = () => {
   };
 
   const saveEdit = (editColor) => {
-    axiosWithAuth().put(`/api/colors/${editColor.id}`, editColor)
-      .then(res => fetchColors())
-      .catch(err => console.log(err));
+    axiosWithAuth()
+        .put(`/api/colors/${editColor.id}`, editColor)
+            .then((res) => {
+                console.log("AXIOS - PUT RESPONSE: ", res)
+                let index = colors.findIndex((color) => color.id === editColor.id);
+                colors[index] = editColor
+                setColors([
+                  ...colors
+                ])
+                console.log('Color edited!')
+            })
+            .catch((err) => {
+                console.log(err)
+            })
   };
 
   const deleteColor = (colorToDelete) => {
-    axiosWithAuth().delete(`/api/colors/${colorToDelete.id}`)
-      .then(res => fetchColors())
-      .catch(err => console.log(err));
+    axiosWithAuth()
+      .delete(`/api/colors/${colorToDelete.id}`)
+        .then((res) => {
+          console.log("AXIOS - DELETE RESPONSE: ", res)
+          setColors(colors.filter(color => color.id !== colorToDelete.id))
+          console.log('Color deleted!')
+        })
+        .catch((err) => {
+          console.log(err)
+        })
   };
 
-  const fetchColors = () => {
-    fetchColorService()
-      .then(colors => {
-        console.log(colors);
-        setColors(colors)
-      })
-      .catch(err => console.log(err));
-  }
-
   useEffect(() => {
-    fetchColors();
+    fetchColorService().then((res) => {
+    setColors(res)
+    })
   }, []);
 
   return (
     <div className="container">
-      <ColorList colors={colors} editing={editing} toggleEdit={toggleEdit} saveEdit={saveEdit} deleteColor={deleteColor} />
-      <Bubbles colors={colors} />
+      <ColorList colors={colors} editing={editing} toggleEdit={toggleEdit} saveEdit={saveEdit} deleteColor={deleteColor}/>
+      <Bubbles colors={colors}/>
     </div>
   );
 };
+
 
 export default BubblePage;
 

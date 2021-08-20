@@ -1,85 +1,72 @@
-import React, { useEffect, useState } from "react";
-import axios from 'axios';
-import styled from 'styled-components';
-import { login, saveToken } from "../helpers/axiosWithAuth";
+import React, {useState, useEffect} from "react";
 import { useHistory } from "react-router-dom";
+import axiosWithAuth from "../helpers/axiosWithAuth";
 
-const Container = styled.div`
-	text-align: center;
-	.login-error {
-		background: #FF000044;
-		padding: .5em;
-	}
-	form {
-		text-align: left;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		label {
-			font-size: 1.1em;
-			margin: .25em;
-		}
-		input {
-			display: block;
-			font-size: 1.3em;
-			margin: .1em;
-			padding: .2em;
-		}
-	}
-`;
-
-const emptyFormData = { username: '', password: '' };
+const initialValues = {
+  username: '',
+  password: ''
+};
 
 const Login = () => {
-  const [formData, setFormData] = useState(emptyFormData);
-  const history = useHistory();
+  const {push} = useHistory();
+  const [formValues, setFormValues] = useState(initialValues);
+  const [error, setError] = useState('')
 
-  //replace with error state
-  const [error, setError] = useState("");
+  const handleChanges = (e) => {
+    setFormValues({
+      ...formValues,
+      [e.target.name]: e.target.value
+    });
+  };
 
-  // make a post request to retrieve a token from the api
-  // when you have handled the token, navigate to the BubblePage route
-
-  const handleChange = (e) => {
-    const newData = { ...formData, [e.target.name]: e.target.value };
-    setFormData(newData);
-  }
-
-  const handleSubmit = (e) => {
+  const handleSubmit = e => {
     e.preventDefault();
-    //login(formData.username, formData.password)
-    axios.post("http://localhost:5000/api/login", { username: formData.username, password: formData.password })
-      .then((response) => {
-        const token = response.data.payload;
-        saveToken(token);
-        history.push("/bubblepage")
-      })
-      .catch((error) => {
-        setError("Username or Password not valid.")
-      });
-  }
+
+    if (formValues.username !== "Lambda" || formValues.password !== "School") {
+      setError("Username or Password not valid.")
+    } 
+    axiosWithAuth()
+    .post('/api/login', formValues)
+        .then((res) =>{
+          console.log("AXIOS - POST RESPONSE: ", res)
+          localStorage.setItem('token', res.data.payload)
+          push('/bubblepage')
+          console.log('Logged In!')
+        })
+        .catch((err) => {
+          console.log('Login Unsuccessful', err)
+        })
+  };
 
   return (
     <div>
       <h1>Welcome to the Bubble App!</h1>
-      <Container>
-        <div data-testid="loginForm" className="login-form">
+      <div data-testid="loginForm" className="login-form">
+        <form onSubmit={handleSubmit}>
+          <label htmlFor="username">Username</label>
+          <input
+            id="username"
+            data-testid="username"
+            name="username"
+            value={formValues.username}
+            onChange={handleChanges}
+            placeholder='Username'
+          />
+          <label htmlFor="password">Password</label>
+          <input
+            id="password"
+            data-testid="password"
+            name="password"
+            type="password"
+            value={formValues.password}
+            onChange={handleChanges}
+            placeholder='Password'
+          />
+          <button id="submit">Login</button>
+        </form>
+      </div>
 
-          <form onSubmit={handleSubmit}>
-            <label>Username:
-              <input type="text" name="username" value={formData.username} onChange={handleChange} id="username" test-id="username" />
-            </label>
-            <label>
-              Password:
-              <input type="password" name="password" value={formData.password} onChange={handleChange} id="password" test-id="password" />
-            </label>
-            <input type="submit" value={"Login"} />
-          </form>
-
-        </div>
-      </Container>
-
-      <p data-testid="errorMessage" className="error">{error}</p>
+      <p id="error" data-testid="errorMessage" className="error">{error}</p>
     </div>
   );
 };

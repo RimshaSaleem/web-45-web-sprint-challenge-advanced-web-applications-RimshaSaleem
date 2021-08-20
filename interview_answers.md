@@ -3,8 +3,17 @@ Be prepared to demonstrate your understanding of this week's concepts by answeri
 
 
 1. Explain what a token is used for.
+Ans:The token is used in addition to or in place of a password. It acts like an electronic key to access something. ... Some tokens may store cryptographic keys that may be used to generate a digital signature, or biometric data, such as fingerprint details.
 
 2. What steps can you take in your web apps to keep your data secure?
+Ans:Keep Software And Plugins Up-To-Date. ...
+Add HTTPS and an SSL Certificate.
+Choose a Smart Password. 
+Use a Secure Web Host. 
+Record User Access and Administrative Privileges. 
+Change Your CMS Default Settings. 
+Backup Your Website. ...
+Know Your Web Server Configuration Files.
 
 3. Describe how web servers work.
 

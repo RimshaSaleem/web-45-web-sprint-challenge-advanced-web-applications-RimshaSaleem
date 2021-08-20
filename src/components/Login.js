@@ -6,6 +6,7 @@ const Login = (props) => {
     username:"",
     password: ""
   })
+
   const [error, setError] = useState("")
   const handleChange = e => {
     setFormValues({
@@ -18,7 +19,8 @@ const Login = (props) => {
     e.preventDefault();
     axiosWithAuth().post("/login", formValues)
       .then(res => {
-        localStorage.setItem("token", res.data.payload)
+        localStorage.setItem("token",
+         res.data.payload)
         console.log("Logged In")
         props.history.push("/protected")
       })

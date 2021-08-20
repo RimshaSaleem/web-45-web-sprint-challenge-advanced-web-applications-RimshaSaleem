@@ -20,8 +20,6 @@ function App() {
       .catch(err => console.log(err))
       
   }
-
-
   return (
     <Router>
       <div className="App">
@@ -29,8 +27,6 @@ function App() {
           Color Picker Sprint Challenge
           <a onClick={handleLogout}data-testid="logoutButton" href="#">logout</a>
         </header> 
-
-
         <Switch>
           <PrivateRoute exact path="/protected" component={BubblePage}/>
           <Route exact path="/" component={Login} />

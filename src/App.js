@@ -11,13 +11,13 @@ import axiosWithAuth from "./helpers/axiosWithAuth";
 function App() {
   const handleLogout = () => {
     axiosWithAuth().post("/logout")
-    .then(response => {
-    console.log("You're Logged Out", response)
-    localStorage.removeItem("token");
-    window.location.href = "http://localhost:3000/"
+      .then(res => {
+        console.log("Logged Out", res)
+        localStorage.removeItem("token");
+        window.location.href = "http://localhost:3000/"
       })
      
-      .catch(error => console.log(error))
+      .catch(err => console.log(err))
       
   }
 

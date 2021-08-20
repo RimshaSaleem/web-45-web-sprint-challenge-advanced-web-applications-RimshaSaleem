@@ -168,13 +168,14 @@ export const handlers = [
 
   rest.put(`${urlBase}/colors/:id`, (req, res, ctx) => {
     if (authenticator(req)) {
+      console.log(req.params.id)
       if (!req.params.id) {
         return res(
           ctx.status(400),
           ctx.json("Your request is missing the color id")
         );
       }
-
+      console.log(req.body)
       if (req.body.id === undefined || !req.body.color || !req.body.code) {
         return res(
           ctx.status(422),

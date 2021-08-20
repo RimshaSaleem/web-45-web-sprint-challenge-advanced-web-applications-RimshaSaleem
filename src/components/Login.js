@@ -25,7 +25,7 @@ const Login = (props) => {
         props.history.push("/protected")
       })
       .catch(err => {
-        setError("Username or Password not valid.")
+        setError(<p>"Username or Password not valid." </p>)
         console.log(err)
       })
   }

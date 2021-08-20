@@ -28,7 +28,7 @@ function App() {
           <a onClick={handleLogout}data-testid="logoutButton" href="#">logout</a>
         </header> 
         <Switch>
-          <PrivateRoute exact path="/protected" component={BubblePage}/>
+          <PrivateRoute exact path="/BubblePage" component={BubblePage}/>
           <Route exact path="/" component={Login} />
         </Switch>  
       </div>

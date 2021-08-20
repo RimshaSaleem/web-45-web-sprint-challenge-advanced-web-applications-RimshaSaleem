@@ -22,7 +22,7 @@ const Login = (props) => {
         localStorage.setItem("token",
          res.data.payload)
         console.log("Logged In")
-        props.history.push("/BubblePage")
+        props.history.push("/bubbles")
       })
       .catch(err => {
         setError(<p>"Username or Password not valid." </p>)

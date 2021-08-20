@@ -1,53 +1,61 @@
 import React, { useEffect, useState } from "react";
-import axiosWithAuth from "../helpers/axiosWithAuth";
+import { useParams } from "react-router-dom"
 
 import Bubbles from "./Bubbles";
 import ColorList from "./ColorList";
-import fetchColorService from '../services/fetchColorService';
+import  fetchColorService from '../services/fetchColorService';
+import axiosWithAuth from "../helpers/axiosWithAuth";
 
-const BubblePage = () => {
+
+const BubblePage = (props) => {
   const [colors, setColors] = useState([]);
   const [editing, setEditing] = useState(false);
+
+  
+  useEffect(() => {
+    
+    fetchColorService().then(res => {
+      console.log(res)
+      setColors(res.data)
+    })
+    
+  },[])
+
 
   const toggleEdit = (value) => {
     setEditing(value);
   };
 
   const saveEdit = (editColor) => {
-    axiosWithAuth()
-        .put(`/api/colors/${editColor.id}`, editColor)
-            .then((res) => {
-                console.log("AXIOS - PUT RESPONSE: ", res)
-                let index = colors.findIndex((color) => color.id === editColor.id);
-                colors[index] = editColor
-                setColors([
-                  ...colors
-                ])
-                console.log('Color edited!')
-            })
-            .catch((err) => {
-                console.log(err)
-            })
+    axiosWithAuth().put(`/colors/${editColor.id}`, editColor)
+      .then(res => {
+        console.log(res)
+        
+        setColors([
+          ...colors.filter((color) => 
+            color.id !== editColor.id
+          ), res.data
+
+        ])
+        
+        
+      })
+      .catch(err => console.log(err))
   };
 
   const deleteColor = (colorToDelete) => {
-    axiosWithAuth()
-      .delete(`/api/colors/${colorToDelete.id}`)
-        .then((res) => {
-          console.log("AXIOS - DELETE RESPONSE: ", res)
-          setColors(colors.filter(color => color.id !== colorToDelete.id))
-          console.log('Color deleted!')
-        })
-        .catch((err) => {
-          console.log(err)
-        })
+    axiosWithAuth().delete(`/colors/${colorToDelete.id}`)
+      .then(res => {
+        console.log(res)
+        setColors(
+    
+          colors.filter((color) => 
+          color.id !== colorToDelete.id)
+          
+        )
+      })
+      .catch(err => console.log(err))
   };
-
-  useEffect(() => {
-    fetchColorService().then((res) => {
-    setColors(res)
-    })
-  }, []);
 
   return (
     <div className="container">
@@ -57,8 +65,8 @@ const BubblePage = () => {
   );
 };
 
-
 export default BubblePage;
+
 
 
 //Task List:

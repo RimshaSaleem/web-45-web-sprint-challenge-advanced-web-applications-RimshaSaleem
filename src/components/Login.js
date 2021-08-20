@@ -1,18 +1,14 @@
-import React, {useState, useEffect} from "react";
-import { useHistory } from "react-router-dom";
+import React, { useState } from "react";
+
 import axiosWithAuth from "../helpers/axiosWithAuth";
 
-const initialValues = {
-  username: '',
-  password: ''
-};
-
-const Login = () => {
-  const {push} = useHistory();
-  const [formValues, setFormValues] = useState(initialValues);
-  const [error, setError] = useState('')
-
-  const handleChanges = (e) => {
+const Login = (props) => {
+  const [formValues, setFormValues] = useState({
+    username:"",
+    password: ""
+  })
+  const [error, setError] = useState("")
+  const handleChange = e => {
     setFormValues({
       ...formValues,
       [e.target.name]: e.target.value
@@ -21,52 +17,43 @@ const Login = () => {
 
   const handleSubmit = e => {
     e.preventDefault();
-
-    if (formValues.username !== "Lambda" || formValues.password !== "School") {
-      setError("Username or Password not valid.")
-    } 
-    axiosWithAuth()
-    .post('/api/login', formValues)
-        .then((res) =>{
-          console.log("AXIOS - POST RESPONSE: ", res)
-          localStorage.setItem('token', res.data.payload)
-          push('/bubblepage')
-          console.log('Logged In!')
-        })
-        .catch((err) => {
-          console.log('Login Unsuccessful', err)
-        })
-  };
-
+    axiosWithAuth().post("/login", formValues)
+      .then(res => {
+        localStorage.setItem("token", res.data.payload)
+        console.log("Logged In")
+        props.history.push("/protected")
+      })
+      .catch(err => {
+        setError("Username or Password not valid.")
+        console.log(err)
+      })
+  }
   return (
     <div>
       <h1>Welcome to the Bubble App!</h1>
       <div data-testid="loginForm" className="login-form">
         <form onSubmit={handleSubmit}>
-          <label htmlFor="username">Username</label>
-          <input
-            id="username"
-            data-testid="username"
-            name="username"
-            value={formValues.username}
-            onChange={handleChanges}
-            placeholder='Username'
+          <input 
+          type="text"
+          id="username"
+          name="username"
+          placeholder="username"
+          value={formValues.username}
+          onChange={handleChange}
           />
-          <label htmlFor="password">Password</label>
-          <input
-            id="password"
-            data-testid="password"
-            name="password"
-            type="password"
-            value={formValues.password}
-            onChange={handleChanges}
-            placeholder='Password'
+          <input 
+          type="password"
+          id="password"
+          name="password"
+          placeholder="password"
+          value={formValues.password}
+          onChange={handleChange}
           />
           <button id="submit">Login</button>
         </form>
       </div>
 
-      <p id="error" data-testid="errorMessage" className="error">{error}</p>
+      <p id="error" className="error">{error}</p>
     </div>
   );
 };
